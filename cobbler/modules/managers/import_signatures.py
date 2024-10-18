@@ -137,7 +137,10 @@ class _ImportSignatureManager(ManagerModule):
                 return utils.subprocess_get(cmd).splitlines()
 
             self.logger.info("no %s found, please install wimlib-utils", cmd)
-        elif ftype.mime_type == "text/plain":
+        elif (
+            ftype.mime_type == "text/plain"
+            or ftype.mime_type == "text/x-shellscript"
+        ):
             with open(filename, 'r') as f:
                 return f.readlines()
         else:
@@ -268,7 +271,13 @@ class _ImportSignatureManager(ManagerModule):
                                     # version file to ensure it's the right version
                                     if sigdata["breeds"][breed][version]["version_file_regex"]:
                                         vf_re = re.compile(sigdata["breeds"][breed][version]["version_file_regex"])
-                                        vf_lines = self.get_file_lines(os.path.join(root, fname))
+                                        ftype_sig = magic.detect_from_filename(os.path.join(root, fname))
+                                        if ftype_sig.mime_type == "application/gzip":
+                                            with gzip.open(os.path.join(root, x), 'r') as f:
+                                                vf_lines = f.readlines()
+                                        else:
+                                            vf_lines = self.get_file_lines(os.path.join(root, fname))
+
                                         for line in vf_lines:
                                             if vf_re.match(line):
                                                 break

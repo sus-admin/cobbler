@@ -1,0 +1,7 @@
+#if $len($name_servers) > 0
+cat >>/etc/resolv.conf <<FOE
+    #for $nameserver in $name_servers
+nameserver $nameserver
+    #end for
+FOE
+#end if

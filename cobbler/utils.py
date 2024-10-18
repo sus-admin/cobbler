@@ -73,8 +73,8 @@ CHEETAH_ERROR_DISCLAIMER = """
 MODULE_CACHE = {}
 SIGNATURE_CACHE = {}
 
-_re_kernel = re.compile(r'(vmlinu[xz]|(kernel|linux(\.img)?)|pxeboot\.n12|wimboot|mboot\.c32|.+\.kernel)')
-_re_initrd = re.compile(r'(initrd(.*)\.img|ramdisk\.image\.gz|boot\.sdi|imgpayld\.tgz)')
+_re_kernel = re.compile(r'(vmlinu[xz]|(kernel|linux(\.img)?)|pxeboot\.n12|wimboot|mboot\.c32|.+\.kernel|base\.txz)')
+_re_initrd = re.compile(r'(initrd(.*)\.img|ramdisk\.image\.gz|boot\.sdi|imgpayld\.tgz|base\.txz)')
 
 
 class DHCP(enum.Enum):
