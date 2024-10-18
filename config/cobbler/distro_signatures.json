@@ -3324,6 +3324,28 @@
           "install.img"
         ]
       },
+      "xcp821": {
+        "signatures": [
+          "Packages"
+        ],
+        "version_file": "^xcp-ng-release-8\\.2\\.1.*\\.x86_64\\.rpm$",
+        "version_file_regex": null,
+        "kernel_arch": "xen\\.gz",
+        "kernel_arch_regex": "^.*(x86_64).*$",
+        "supported_arches": [
+          "x86_64"
+        ],
+        "supported_repo_breeds": [],
+        "kernel_file": "vmlinuz",
+        "initrd_file": "xen\\.gz",
+        "isolinux_ok": false,
+        "default_autoinstall": "answerfile.xml",
+        "kernel_options": "dom0_max_vcpus=1-2 dom0_mem=max:752M,752M",
+        "kernel_options_post": "",
+        "boot_files": [
+          "install.img"
+        ]
+      },
       "xenserver620": {
         "signatures": [
           "packages.xenserver"

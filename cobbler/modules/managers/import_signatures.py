@@ -541,9 +541,24 @@ class _ImportSignatureManager(ManagerModule):
             if re_krn.match(x):
                 if self.signature["kernel_arch_regex"]:
                     re_krn2 = re.compile(self.signature["kernel_arch_regex"])
-                    krn_lines = self.get_file_lines(os.path.join(dirname, x))
+                    ftype_krn = magic.detect_from_filename(os.path.join(dirname, x))
+                    if ftype_krn.mime_type == "application/gzip":
+                        with gzip.open(os.path.join(dirname, x), 'r') as f:
+                            krn_lines = f.readlines()
+                    else:
+                        krn_lines = self.get_file_lines(os.path.join(dirname, x))
                     for line in krn_lines:
-                        m = re_krn2.match(line)
+                        try:
+                            m = re_krn2.match(line)
+                        except TypeError:
+                            #  regex evaluatoin "string pattern" failed... is it bytes?
+                            # https://docs.python.org/3.12/library/codecs.html
+                            try:
+                                m = re_krn2.match(line.decode("latin-1"))
+                            except:
+                                pass
+                        except:
+                            pass
                         if m:
                             for group in m.groups():
                                 group = group.lower()
