@@ -1,0 +1,37 @@
+DISTRIBUTIONS="base.txz kernel.txz lib32.txz"
+${SNIPPET('BSD-INTERFACES-var')}export nonInteractive="YES"
+export ZFSBOOT_DISKS="ada0"
+export ZFSBOOT_VDEV_TYPE="stripe"
+export ZFSBOOT_FORCE_4K_SECTORS="1"
+export ZFSBOOT_SWAP_SIZE="2g"
+export ZFSBOOT_SWAP_MIRROR="1"
+export ZFSBOOT_POOL_CREATE_OPTIONS=""
+export ZFSBOOT_BEROOT_NAME="ROOT"
+export ZFSBOOT_BOOTFS_NAME="default"
+export ZFSBOOT_DATASETS="
+    /\$ZFSBOOT_BEROOT_NAME mountpoint=none
+    /\$ZFSBOOT_BEROOT_NAME/\$ZFSBOOT_BOOTFS_NAME mountpoint=/
+    /tmp mountpoint=/tmp,setuid=off
+    /usr mountpoint=/usr,canmount=off
+    /usr/local mountpoint=/usr/local
+    /var mountpoint=/var
+    /var/db mountpoint=/var/db,canmount=off
+    /var/db/mysql mountpoint=/var/db/mysql,recordsize=16k,atime=off,primarycache=metadata
+    /var/db/mysql/logs mountpoint=/var/db/mysql/logs,recordsize=128k,atime=off,primarycache=metadata
+    /var/db/pkg mountpoint=/var/db/pkg
+    /var/tmp mountpoint=/var/tmp,setuid=off
+    /home mountpoint=/home
+"
+
+#!/bin/sh
+cat >>/etc/rc.conf <<FOE
+zfs_enable="YES"
+sshd_enable="YES"
+${SNIPPET('network_config_BSD')}dumpdev="AUTO"
+FOE
+${SNIPPET('BSD-DNS-config')}echo '$6$5RSID4916Oa7QiGd\$GQ0qSuNe7bfftnYxfFYxaciXwhQ1Rpftokr89cQE/eM3Y0GRfoSdEn15c8B5qdSzzFJEK6xItWUiV26V9Rs7f.' | pw user mod root -H 0
+sed -i '' 's/#PermitRootLogin no/PermitRootLogin yes/' /etc/ssh/sshd_config
+whoami && echo ~
+ssh-keygen -t rsa -b 2048 -m ssh2 -f /root/.ssh/id_rsa -N ""
+fetch -o /root/.ssh/authorized_keys http://10.0.0.10/cblr/pub/Cobbler-id_rsa.pub
+reboot
