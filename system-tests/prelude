@@ -1,0 +1,72 @@
+#
+# Helpers
+#
+
+_dir() {
+	for dir in ${@}; do
+		test -e ${dir} && echo ${dir} && return
+	done
+}
+
+srvctl() {
+	$(command -v supervisorctl systemctl | head -1) ${@}
+}
+
+stop_cobblerd() {
+	srvctl stop cobblerd
+}
+
+restart_cobblerd() {
+	srvctl restart cobblerd
+	sleep 1
+}
+
+_make_system_id() {
+	local id=$(cat ${tmp}/_next-system-id 2>/dev/null)
+	echo $((id + 1)) | tee ${tmp}/_next-system-id
+}
+
+make_mac_address() {
+	printf "52:54:00"
+	printf "%06x\n" $(_make_system_id) | sed 's/\(..\)/:\1/g'
+}
+
+prepare() {
+	mkdir -p ${tmp}
+	stop_cobblerd
+	rm -f ${path_templates}/${autoinstall_template}
+	rm -f ${path_collections}/*/*.json
+	rm -rf ${path_distro_mirrors}/*
+	restart_cobblerd
+	cobbler sync >/dev/null
+}
+
+#
+# Cobbler paths
+#
+
+path_collections=/var/lib/cobbler/collections
+path_distro_mirrors=/var/www/cobbler/distro_mirrors
+path_templates=/var/lib/cobbler/templates
+path_tftp=$(_dir /var/lib/tftpboot /srv/tftpboot)
+
+#
+# Variables
+#
+
+# Empty vmlinuz and initramfs for tests that don't require real images
+fake_kernel=${SYSTESTS_ROOT}/images/fake/vmlinuz
+fake_initramfs=${SYSTESTS_ROOT}/images/fake/initramfs
+
+# Autoinstall template for system tests
+autoinstall_template=system-tests.sh
+
+# Bridge for autoinstall tests
+bridge=pxe
+
+# Usually QEMU binary is called qemu-system-<arch>, but RHEL names it qemu-kvm
+# and hides it in /usr/libexec
+qemu=$(command -v qemu-system-$(uname -m) /usr/libexec/qemu-kvm | head -1)
+
+# Temporary per-test directory
+tmp=${SYSTESTS_TMP}/${TEST_NAME}
