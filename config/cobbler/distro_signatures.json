@@ -3312,6 +3312,29 @@
         }
       }
     },
+    "truenas-core": {
+      "truenas-core13.0.6.2": {
+        "signatures": [
+          "boot"
+        ],
+        "version_file": "^TrueNAS-MANIFEST$",
+        "version_file_regex": "^.*TrueNAS-13.0-U6.2.*$",
+        "kernel_arch": "device\\.hints",
+        "kernel_arch_regex": null,
+        "supported_arches": [
+          "i386",
+          "amd64"
+        ],
+        "supported_repo_breeds": [],
+        "kernel_file": "base-os-13.0-U6.2.*.tgz",
+        "initrd_file": "base-os-13.0-U6.2.*.tgz",
+        "isolinux_ok": false,
+        "default_autoinstall": "",
+        "kernel_options": "",
+        "kernel_options_post": "",
+        "boot_files": []
+      }
+    },
     "freebsd": {
       "freebsd8.2": {
         "signatures": [

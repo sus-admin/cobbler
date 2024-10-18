@@ -139,6 +139,7 @@ class _ImportSignatureManager(ManagerModule):
             self.logger.info("no %s found, please install wimlib-utils", cmd)
         elif (
             ftype.mime_type == "text/plain"
+            or ftype.mime_type == "application/json"
             or ftype.mime_type == "text/x-shellscript"
         ):
             with open(filename, 'r') as f:
